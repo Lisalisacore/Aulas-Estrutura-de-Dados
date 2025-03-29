@@ -4,7 +4,7 @@
 
 void Insercao(int *V, int N);
     int main() {
-        int N = 10;
+        int N = 100000;
         int *V = (int *) malloc(N * sizeof(int));
         int i;
         srand(time(NULL));
