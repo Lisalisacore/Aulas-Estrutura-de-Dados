@@ -3,23 +3,41 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_PROCESSOS 1000
 #define MAX_LINHA 256
 
 int main() {
-    Processo processos[MAX_PROCESSOS];
-    int n = 0;
+    Processo *processos = NULL; 
+    int capacidade = 10;        
+    int n = 0;                  
 
-    FILE *arquivo = fopen("processo_043_202409032338.csv", "r");
+    processos = (Processo *)malloc(capacidade * sizeof(Processo));
+    if (processos == NULL) {
+        printf("Erro ao alocar memória.\n");
+        return 1;
+    }
+
+    FILE *arquivo = fopen("ordenado_por_data.csv", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
+        free(processos);
         return 1;
     }
 
     char linha[MAX_LINHA];
     fgets(linha, MAX_LINHA, arquivo);
 
-    while (fgets(linha, MAX_LINHA, arquivo) != NULL && n < MAX_PROCESSOS) {
+    while (fgets(linha, MAX_LINHA, arquivo) != NULL) {
+        
+        if (n >= capacidade) {
+            capacidade *= 2; 
+            processos = (Processo *)realloc(processos, capacidade * sizeof(Processo));
+            if (processos == NULL) {
+                printf("Erro ao realocar memória.\n");
+                fclose(arquivo);
+                return 1;
+            }
+        }
+
         sscanf(linha, "%d,\"%[^\"]\",%d-%d-%d %d:%d:%d,{%d},{%d},%d",
                &processos[n].id,
                processos[n].numero,
@@ -42,7 +60,16 @@ int main() {
     fclose(arquivo);
 
     ordenarPorId(processos, n);
-    FILE *saida1 = fopen("processo_043_202409032338.csv", "w");
+    for (int i = 0; i < n; i++) {
+        printf("ID: %d\n", processos[i].id);
+    }
+
+    FILE *saida1 = fopen("ordenado_por_id.csv", "w");
+    if (saida1 == NULL) {
+        printf("Erro ao criar o arquivo ordenado_por_id.csv.\n");
+        free(processos);
+        return 1;
+    }
     fprintf(saida1, "id,numero,data_ajuizamento,id_classe,id_assunto,ano_eleicao\n");
     for (int i = 0; i < n; i++) {
         fprintf(saida1, "%d,%s,%d-%02d-%02d %02d:%02d:%02d,%d,%d,%d\n",
@@ -57,11 +84,18 @@ int main() {
                 processos[i].id_classe,
                 processos[i].id_assunto,
                 processos[i].ano_eleicao);
+        printf("Escrevendo processo ID: %d\n", processos[i].id); 
     }
     fclose(saida1);
 
     ordenarPorData(processos, n);
-    FILE *saida2 = fopen("processo_043_202409032338.csv", "w");
+    FILE *saida2 = fopen("ordenado_por_data.csv", "w");
+    if (saida2 == NULL) {
+        printf("Erro ao criar o arquivo ordenado_por_data.csv.\n");
+        fclose(saida1);
+        free(processos);
+        return 1;
+    }
     fprintf(saida2, "id,numero,data_ajuizamento,id_classe,id_assunto,ano_eleicao\n");
     for (int i = 0; i < n; i++) {
         fprintf(saida2, "%d,%s,%d-%02d-%02d %02d:%02d:%02d,%d,%d,%d\n",
@@ -92,6 +126,8 @@ int main() {
         int dias = calcularDiasTramitacao(processos[i]);
         printf("Processo ID %d está em tramitação há %d dias.\n", processos[i].id, dias);
     }
+
+    free(processos);
 
     return 0;
 }

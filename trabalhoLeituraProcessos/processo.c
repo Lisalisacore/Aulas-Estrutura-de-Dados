@@ -6,24 +6,32 @@
 
 void ordenarPorId(Processo *processos, int n) {
     for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (processos[j].id > processos[j + 1].id) {
-                Processo temp = processos[j];
-                processos[j] = processos[j + 1];
-                processos[j + 1] = temp;
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (processos[j].id < processos[minIdx].id) {
+                minIdx = j;
             }
+        }
+        if (minIdx != i) {
+            Processo temp = processos[i];
+            processos[i] = processos[minIdx];
+            processos[minIdx] = temp;
         }
     }
 }
 
 void ordenarPorData(Processo *processos, int n) {
     for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            if (difftime(mktime(&processos[j].data_ajuizamento), mktime(&processos[j + 1].data_ajuizamento)) > 0) {
-                Processo temp = processos[j];
-                processos[j] = processos[j + 1];
-                processos[j + 1] = temp;
+        int maxIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (mktime(&processos[j].data_ajuizamento) > mktime(&processos[maxIdx].data_ajuizamento)) {
+                maxIdx = j;
             }
+        }
+        if (maxIdx != i) {
+            Processo temp = processos[i];
+            processos[i] = processos[maxIdx];
+            processos[maxIdx] = temp;
         }
     }
 }
