@@ -1,4 +1,5 @@
 #include "processo.h"
+#include "processo.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -3,6 +3,7 @@
 #include <string.h> 
  
 #include "cidades.h" 
+#include "cidades.c"
  
 int main () { 
      
