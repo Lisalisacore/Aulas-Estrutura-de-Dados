@@ -17,7 +17,7 @@ int main() {
         return 1;
     }
 
-    FILE *arquivo = fopen("ordenado_por_data.csv", "r");
+    FILE *arquivo = fopen("processo_043_202409032338.csv", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
         free(processos);
